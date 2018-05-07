@@ -278,7 +278,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             // String authority =   + ".com.scanlibrary.provider"; // As defined in Manifest
             Uri tempFileUri = FileProvider.getUriForFile(getActivity().getApplicationContext(),
-                    com.scanlibrary.BuildConfig.APPLICATION_ID, // As defined in Manifest
+                    getActivity().getApplicationContext().getPackageName(), // As defined in Manifest
                     file);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempFileUri);
         } else {
