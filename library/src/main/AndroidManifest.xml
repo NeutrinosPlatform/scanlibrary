@@ -22,7 +22,7 @@
 
         <provider
             android:name="com.scanlibrary.CustomFileProvider"
-            android:authorities="${applicationId}.com.scanlibrary.provider"
+            android:authorities="${applicationId}"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
