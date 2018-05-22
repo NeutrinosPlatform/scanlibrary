@@ -13,7 +13,6 @@ android {
         versionName "1.0"
         ndk {
             moduleName "Scanner"
-            abiFilters "armeabi-v7a", "x86", "armeabi", "mips"
         }
         sourceSets.main {
             jni.srcDirs = []
