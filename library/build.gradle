@@ -5,6 +5,9 @@ android {
     compileSdkVersion 24
     buildToolsVersion '26.0.2'
 
+packagingOptions{
+    doNotStrip '*/mips/*.so'
+}
 
     defaultConfig {
         minSdkVersion 16
@@ -13,6 +16,7 @@ android {
         versionName "1.0"
         ndk {
             moduleName "Scanner"
+            abiFilters "armeabi-v7a", "x86", "armeabi"
         }
         sourceSets.main {
             jni.srcDirs = []
