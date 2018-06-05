@@ -17,7 +17,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/ic_image"
-            android:text="Original"
+            android:text="Org"
             android:textColor="@android:color/white" />
 
         <Button
@@ -28,7 +28,7 @@
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/ic_enhamce_image"
             android:singleLine="true"
-            android:text="Magic color"
+            android:text="Magic"
             android:textColor="@android:color/white" />
 
         <Button
@@ -39,7 +39,7 @@
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/ic_gray"
             android:singleLine="true"
-            android:text="Gray Mode"
+            android:text="Gray"
             android:textColor="@android:color/white" />
 
         <Button
@@ -50,8 +50,31 @@
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/ic_black_and_white"
             android:singleLine="true"
-            android:text="B and W"
+            android:text="B &amp; W"
             android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/rotanticButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_rotac"
+            android:singleLine="true"
+            android:text="Left"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/rotcButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_rotc"
+            android:singleLine="true"
+            android:text="Right"
+            android:textColor="@android:color/white" />
+
     </LinearLayout>
 
     <Button
