@@ -40,6 +40,7 @@ import java.util.Date;
 public class PickImageFragment extends Fragment implements  OnDialogButtonClickListener {
 
     public final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
+    int camorgal = 0;
 
     // for security permissions
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
@@ -268,6 +269,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
     }
 
     public void openMediaContent() {
+        camorgal = 1;
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("image/*");
@@ -275,6 +277,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
     }
 
     public void openCamera() {
+        camorgal = 0;
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         File file = createImageFile();
         boolean isDirectoryCreated = file.getParentFile().mkdirs();
@@ -324,6 +327,8 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
         }
         if (bitmap != null) {
             
+            if ( camorgal == 0 )
+            {
             PickImageFragment.this.getActivity().getContentResolver().notifyChange(fileUri, null);
             File imageFile = new File(fileUri.getPath());
             ExifInterface exif = null;
@@ -359,7 +364,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
             android.graphics.Matrix matrix = new android.graphics.Matrix();
             matrix.postRotate(rotate);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-
+            }
             postImagePick(bitmap);
         }
     }
