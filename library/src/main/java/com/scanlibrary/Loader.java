@@ -10,10 +10,10 @@ class Loader {
     protected static synchronized void load() {
         if (done)
             return;
-
-        System.loadLibrary("opencv_java3");
+        
         System.loadLibrary("Scanner");
-
+        System.loadLibrary("opencv_java3");
+        
         done = true;
     }
 }
