@@ -329,7 +329,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
             
             if ( camorgal == 0 )
             {
-            PickImageFragment.this.getActivity().getContentResolver().notifyChange(fileUri, null);
+            //PickImageFragment.this.getActivity().getContentResolver().notifyChange(fileUri, null);
             File imageFile = new File(fileUri.getPath());
             ExifInterface exif = null;
             
