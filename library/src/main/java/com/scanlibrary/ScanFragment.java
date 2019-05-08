@@ -179,8 +179,8 @@ public class ScanFragment extends Fragment {
     }
 
     private Bitmap getScannedBitmap(Bitmap original, Map<Integer, PointF> points) {
-        int width = original.getWidth();
-        int height = original.getHeight();
+        int width = original.getWidth() / 2;
+        int height = original.getHeight() / 2;
         float xRatio = (float) original.getWidth() / sourceImageView.getWidth();
         float yRatio = (float) original.getHeight() / sourceImageView.getHeight();
 
