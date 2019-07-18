@@ -53,7 +53,6 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
     private Uri fileUri;
     private IScanner scanner;
 
-
     // for security permissions
     @ValueConstants.DialogType
     private int mDialogType;
@@ -377,7 +376,18 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
 
     private Bitmap getBitmap(Uri selectedimg) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 1;
+        try {
+            Log.wtf("quality", "step 1");
+            int quality = getArguments().getInt("quality", 1);
+            Log.wtf("quality", "step 2");
+            Log.wtf("quality", String.valueOf(quality));
+            Log.wtf("quality", "step 3");
+            options.inSampleSize = quality;
+            Log.wtf("quality", "step 4");
+        } catch (Exception e) {
+            options.inSampleSize = 1;
+        }
+
         AssetFileDescriptor fileDescriptor = null;
         fileDescriptor =
                 getActivity().getContentResolver().openAssetFileDescriptor(selectedimg, "r");
