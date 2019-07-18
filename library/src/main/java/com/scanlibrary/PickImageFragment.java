@@ -377,7 +377,12 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
 
     private Bitmap getBitmap(Uri selectedimg) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 1;
+        try {
+            int quality = getArguments().getInt("quality", 1);
+            options.inSampleSize = quality;
+        } catch (Exception e) {
+            options.inSampleSize = 1;
+        }
         AssetFileDescriptor fileDescriptor = null;
         fileDescriptor =
                 getActivity().getContentResolver().openAssetFileDescriptor(selectedimg, "r");
