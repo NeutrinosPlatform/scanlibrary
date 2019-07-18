@@ -7,6 +7,7 @@ import android.content.ComponentCallbacks2;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 /**
  * Created by jhansi on 28/03/15.
@@ -24,6 +25,9 @@ public class ScanActivity extends Activity implements IScanner, ComponentCallbac
         PickImageFragment fragment = new PickImageFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ScanConstants.OPEN_INTENT_PREFERENCE, getPreferenceContent());
+        Log.wtf("qualityScan", "Here we GOOOOOOOOOOO");
+        Log.wtf("qualityScan", String.valueOf(getIntent().getIntExtra("quality", 1)));
+        bundle.putInt("quality", getIntent().getIntExtra("quality", 1));
         fragment.setArguments(bundle);
         android.app.FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
