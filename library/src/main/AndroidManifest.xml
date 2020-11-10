@@ -21,7 +21,7 @@
         </activity>
 
         <provider
-            android:name="com.scanlibrary.CustomFileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.com.scanlibrary.provider"
             android:exported="false"
             android:grantUriPermissions="true">

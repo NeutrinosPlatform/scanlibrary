@@ -2,38 +2,34 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '26.0.2'
-
-    packagingOptions {
-        doNotStrip '*/mips/*.so'
-        doNotStrip '*/mips64/*.so'
-    }
+    compileSdkVersion 30
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 24
+        minSdkVersion 19
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        ndk {
-            moduleName "Scanner"
-        }
-        sourceSets.main {
-            jni.srcDirs = []
-            jniLibs.srcDirs 'src/main/libs'
-        }
+        ndk
+                {
+                    moduleName "Scanner"
+                }
     }
-
+    sourceSets.main
+            {
+                jni.srcDirs = []
+                jniLibs.srcDirs 'src/main/libs'
+            }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:support-v4:24.2.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
