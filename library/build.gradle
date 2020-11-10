@@ -4,6 +4,12 @@ apply plugin: 'com.github.dcendents.android-maven'
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
+    
+    // Needed for jitpack builds
+    packagingOptions {
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
+    }
 
     defaultConfig {
         minSdkVersion 19
