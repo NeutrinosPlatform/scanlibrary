@@ -1,6 +1,6 @@
 package com.scanlibrary;
 
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 /**
  * Created by sekar on 21/2/18.
