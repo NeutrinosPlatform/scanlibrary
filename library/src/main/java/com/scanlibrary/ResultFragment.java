@@ -324,7 +324,6 @@ public class ResultFragment extends Fragment {
 
     protected synchronized void disableButtons() {
         doneButton.setEnabled(false);
-        original.setEnabled(false);
         originalButton.setEnabled(false);
         MagicColorButton.setEnabled(false);
         grayModeButton.setEnabled(false);
@@ -335,7 +334,6 @@ public class ResultFragment extends Fragment {
 
     protected synchronized void enableButtons() {
         doneButton.setEnabled(true);
-        original.setEnabled(true);
         originalButton.setEnabled(true);
         MagicColorButton.setEnabled(true);
         grayModeButton.setEnabled(true);
