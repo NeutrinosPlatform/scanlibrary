@@ -34,6 +34,7 @@ import java.util.Date;
  */
 public class PickImageFragment extends Fragment {
     int camorgal = 0;
+    private String imagePath = "";
     private View view;
     private ImageButton cameraButton;
     private ImageButton galleryButton;
@@ -62,6 +63,7 @@ public class PickImageFragment extends Fragment {
         cameraButton.setOnClickListener(new CameraButtonClickListener());
         galleryButton = (ImageButton) view.findViewById(R.id.selectButton);
         galleryButton.setOnClickListener(new GalleryClickListener());
+        imagePath = getActivity().getApplicationContext().getExternalCacheDir().getPath() + "/scanSample";
         if (isIntentPreferenceSet()) {
             handleIntentPreference();
         } else {
@@ -71,7 +73,7 @@ public class PickImageFragment extends Fragment {
 
     private void clearTempImages() {
         try {
-            File tempFolder = new File(ScanConstants.IMAGE_PATH);
+            File tempFolder = new File(imagePath);
             for (File f : tempFolder.listFiles())
                 f.delete();
         } catch (Exception e) {
@@ -148,7 +150,7 @@ public class PickImageFragment extends Fragment {
         clearTempImages();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new
                 Date());
-        File file = new File(ScanConstants.IMAGE_PATH, "IMG_" + timeStamp +
+        File file = new File(imagePath, "IMG_" + timeStamp +
                 ".jpg");
         fileUri = Uri.fromFile(file);
         return file;
