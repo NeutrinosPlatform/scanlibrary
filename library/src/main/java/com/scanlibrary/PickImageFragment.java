@@ -41,7 +41,6 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
 
     public final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
     int camorgal = 0;
-    private String imagePath = "";
 
     // for security permissions
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
@@ -85,7 +84,6 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
         cameraButton.setOnClickListener(new CameraButtonClickListener());
         galleryButton = (ImageButton) view.findViewById(R.id.selectButton);
         galleryButton.setOnClickListener(new GalleryClickListener());
-        imagePath = getActivity().getApplicationContext().getExternalCacheDir().getPath() + "/scanSample";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkMultiplePermissions(REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, getActivity());
         } else {
@@ -218,7 +216,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
 
     private void clearTempImages() {
         try {
-            File tempFolder = new File(imagePath);
+            File tempFolder = new File(ScanConstants.IMAGE_PATH);
             for (File f : tempFolder.listFiles())
                 f.delete();
         } catch (Exception e) {
@@ -300,7 +298,7 @@ public class PickImageFragment extends Fragment implements  OnDialogButtonClickL
         // clearTempImages();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new
                 Date());
-        File file = new File(imagePath, "IMG_" + timeStamp +
+        File file = new File(ScanConstants.IMAGE_PATH, "IMG_" + timeStamp +
                 ".jpg");
         fileUri = Uri.fromFile(file);
         return file;
