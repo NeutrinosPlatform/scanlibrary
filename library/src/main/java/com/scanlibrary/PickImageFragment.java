@@ -1,28 +1,33 @@
 package com.scanlibrary;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
 import android.media.ExifInterface;
+
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,15 +37,31 @@ import java.util.Date;
 /**
  * Created by jhansi on 04/04/15.
  */
-public class PickImageFragment extends Fragment {
+public class PickImageFragment extends Fragment implements  OnDialogButtonClickListener {
+
+    public final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 1;
     int camorgal = 0;
-    private String imagePath = "";
+
+    // for security permissions
+    private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
+    private static final String READ_EXTERNAL_STORAGE_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final String WRITE_EXTERNAL_STORAGE_PERMISSION = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
     private View view;
     private ImageButton cameraButton;
     private ImageButton galleryButton;
     private Uri fileUri;
     private IScanner scanner;
-    private static final int MY_CAMERA_REQUEST_CODE = 100;
+
+
+    // for security permissions
+    @ValueConstants.DialogType
+    private int mDialogType;
+    private String mRequestPermissions = "We are requesting the camera and Gallery permission as it is absolutely necessary for the app to perform it\'s functionality.\nPlease select \"Grant Permission\" to try again and \"Cancel \" to exit the application.";
+    private String mRequsetSettings = "You have rejected the camera and Gallery permission for the application. As it is absolutely necessary for the app to perform you need to enable it in the settings of your device.\nPlease select \"Go to settings\" to go to application settings in your device and \"Cancel \" to exit the application.";
+    private String mGrantPermissions = "Grant Permissions";
+    private String mCancel = "Cancel";
+    private String mGoToSettings = "Go To Settings";
 
     @Override
     public void onAttach(Activity activity) {
@@ -63,17 +84,139 @@ public class PickImageFragment extends Fragment {
         cameraButton.setOnClickListener(new CameraButtonClickListener());
         galleryButton = (ImageButton) view.findViewById(R.id.selectButton);
         galleryButton.setOnClickListener(new GalleryClickListener());
-        imagePath = getActivity().getApplicationContext().getExternalCacheDir().getPath() + "/scanSample";
-        if (isIntentPreferenceSet()) {
-            handleIntentPreference();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkMultiplePermissions(REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, getActivity());
         } else {
-            getActivity().finish();
+             // Open your camera here.
+             if (isIntentPreferenceSet()) {
+                handleIntentPreference();
+             } else {
+                getActivity().finish();
+             }
+        }
+    }
+
+    public static void openAlertDialog(String message, String positiveBtnText, String negativeBtnText,
+                                       final OnDialogButtonClickListener listener,Context mContext) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AlertDialogCustom);
+        builder.setPositiveButton(positiveBtnText, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                listener.onPositiveButtonClicked();
+            }
+        });
+        builder.setPositiveButton(positiveBtnText, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                listener.onNegativeButtonClicked();
+            }
+        });
+
+        builder.setTitle(mContext.getResources().getString(R.string.app_name));
+        builder.setMessage(message);
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setCancelable(false);
+        builder.create().show();
+    }
+
+    @Override
+    public void onPositiveButtonClicked() {
+        switch (mDialogType) {
+            case ValueConstants.DialogType.DIALOG_DENY:
+                checkMultiplePermissions(REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, getActivity());
+                break;
+            case ValueConstants.DialogType.DIALOG_NEVER_ASK:
+                redirectToAppSettings(getActivity());
+                break;
+        }
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    // Call your camera here.
+                    if (isIntentPreferenceSet()) {
+                        handleIntentPreference();
+                    } else {
+                        getActivity().finish();
+                    }
+                } else {
+                    boolean showRationale1 = shouldShowRequestPermissionRationale(CAMERA_PERMISSION);
+                    boolean showRationale2 = shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE_PERMISSION);
+                    boolean showRationale3 = shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE_PERMISSION);
+                    if (showRationale1 && showRationale2 && showRationale3) {
+                        //explain to user why we need the permissions
+                        mDialogType = ValueConstants.DialogType.DIALOG_DENY;
+                        // Show dialog with
+                        openAlertDialog(mRequestPermissions, mGrantPermissions, mCancel, this, getActivity());
+                    } else {
+                        //explain to user why we need the permissions and ask him to go to settings to enable it
+                        mDialogType = ValueConstants.DialogType.DIALOG_NEVER_ASK;
+                        openAlertDialog(mRequsetSettings, mGoToSettings, mCancel, this, getActivity());
+                    }
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    //check for camera and storage access permissions
+    @TargetApi(Build.VERSION_CODES.M)
+    private void checkMultiplePermissions(int permissionCode, Context context) {
+
+        String[] PERMISSIONS = {CAMERA_PERMISSION, READ_EXTERNAL_STORAGE_PERMISSION, WRITE_EXTERNAL_STORAGE_PERMISSION};
+        if (!hasPermissions(context, PERMISSIONS)) {
+            requestPermissions(PERMISSIONS, permissionCode);
+        } else {
+            // Open your camera here.
+            if (isIntentPreferenceSet()) {
+                handleIntentPreference();
+            } else {
+                getActivity().finish();
+            }
+        }
+    }
+
+    private boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void redirectToAppSettings(Context context) {
+        String packageName = context.getPackageName();
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", packageName, null);
+        intent.setData(uri);
+        try {
+            context.startActivity(intent);
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void clearTempImages() {
         try {
-            File tempFolder = new File(imagePath);
+            File tempFolder = new File(ScanConstants.IMAGE_PATH);
             for (File f : tempFolder.listFiles())
                 f.delete();
         } catch (Exception e) {
@@ -104,14 +247,24 @@ public class PickImageFragment extends Fragment {
     private class CameraButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            openCamera();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                checkMultiplePermissions(REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, getActivity());
+            } else {
+                // Open your camera here.
+                openCamera();
+            }
         }
     }
 
     private class GalleryClickListener implements View.OnClickListener {
         @Override
         public void onClick(View view) {
-            openMediaContent();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                checkMultiplePermissions(REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS, getActivity());
+            } else {
+                // Open your media here.
+                openMediaContent();
+            }
         }
     }
 
@@ -125,32 +278,27 @@ public class PickImageFragment extends Fragment {
 
     public void openCamera() {
         camorgal = 0;
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-            File file = createImageFile();
-            boolean isDirectoryCreated = file.getParentFile().mkdirs();
-            Log.d("", "openCamera: isDirectoryCreated: " + isDirectoryCreated);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        File file = createImageFile();
+        boolean isDirectoryCreated = file.getParentFile().mkdirs();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             String aut =   getActivity().getApplicationContext().getPackageName() + ".com.scanlibrary.provider"; // As defined in Manifest
-                Uri tempFileUri = FileProvider.getUriForFile(getActivity().getApplicationContext(),
-                        aut, // As defined in Manifest
-                        file);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempFileUri);
-            } else {
-                Uri tempFileUri = Uri.fromFile(file);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempFileUri);
-            }
-            startActivityForResult(cameraIntent, ScanConstants.START_CAMERA_REQUEST_CODE);
+            Uri tempFileUri = FileProvider.getUriForFile(getActivity().getApplicationContext(),
+                    aut, // As defined in Manifest
+                    file);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempFileUri);
         } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, MY_CAMERA_REQUEST_CODE);
+            Uri tempFileUri = Uri.fromFile(file);
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempFileUri);
         }
+        startActivityForResult(cameraIntent, ScanConstants.START_CAMERA_REQUEST_CODE);
     }
 
     private File createImageFile() {
-        clearTempImages();
+        // clearTempImages();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new
                 Date());
-        File file = new File(imagePath, "IMG_" + timeStamp +
+        File file = new File(ScanConstants.IMAGE_PATH, "IMG_" + timeStamp +
                 ".jpg");
         fileUri = Uri.fromFile(file);
         return file;
@@ -242,18 +390,5 @@ public class PickImageFragment extends Fragment {
                 = BitmapFactory.decodeFileDescriptor(
                 fileDescriptor.getFileDescriptor(), null, options);
         return original;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_REQUEST_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
-            } else {
-                Toast.makeText(getActivity(), "camera permission denied", Toast.LENGTH_LONG).show();
-            }
-
-        }
     }
 }

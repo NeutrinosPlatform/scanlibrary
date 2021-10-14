@@ -1,4 +1,4 @@
-APP_STL := c++_static
+APP_STL := stlport_static
 APP_CPPFLAGS := -frtti -fexceptions
 APP_ABI := all
-APP_PLATFORM := android-19
+APP_PLATFORM := android-14

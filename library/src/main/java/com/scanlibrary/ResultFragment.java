@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -65,6 +64,8 @@ public class ResultFragment extends Fragment {
         Bitmap bitmap = getBitmap();
         transformed = bitmap;
         rotoriginal = bitmap;
+
+        //Bitmap bitmap = getBitmap();
         setScannedImage(bitmap);
         doneButton = (Button) view.findViewById(R.id.doneButton);
         doneButton.setOnClickListener(new DoneButtonClickListener());
@@ -196,6 +197,7 @@ public class ResultFragment extends Fragment {
             try {
                 showProgressDialog(getResources().getString(R.string.applying_filter));
                 transformed = rotoriginal;
+
                 scannedImageView.setImageBitmap(rotoriginal);
                 dismissDialog();
             } catch (OutOfMemoryError e) {
@@ -237,6 +239,7 @@ public class ResultFragment extends Fragment {
             });
         }
     }
+
 
     private class RotanticlockButtonClickListener implements View.OnClickListener {
         @Override
@@ -322,28 +325,8 @@ public class ResultFragment extends Fragment {
         }
     }
 
-    protected synchronized void disableButtons() {
-        doneButton.setEnabled(false);
-        originalButton.setEnabled(false);
-        MagicColorButton.setEnabled(false);
-        grayModeButton.setEnabled(false);
-        bwButton.setEnabled(false);
-        rotanticButton.setEnabled(false);
-        rotcButton.setEnabled(false);
-    }
-
-    protected synchronized void enableButtons() {
-        doneButton.setEnabled(true);
-        originalButton.setEnabled(true);
-        MagicColorButton.setEnabled(true);
-        grayModeButton.setEnabled(true);
-        bwButton.setEnabled(true);
-        rotanticButton.setEnabled(true);
-        rotcButton.setEnabled(true);
-    }
 
     protected synchronized void showProgressDialog(String message) {
-        disableButtons();
         if (progressDialogFragment != null && progressDialogFragment.isVisible()) {
             // Before creating another loading dialog, close all opened loading dialogs (if any)
             progressDialogFragment.dismissAllowingStateLoss();
@@ -356,6 +339,5 @@ public class ResultFragment extends Fragment {
 
     protected synchronized void dismissDialog() {
         progressDialogFragment.dismissAllowingStateLoss();
-        enableButtons();
     }
 }

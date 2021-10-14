@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_name">ScanLibrary</string>
@@ -13,4 +12,5 @@
     <string name="applying_filter">Applying filter</string>
     <string name="low_memory">Low Memory</string>
     <string name="low_memory_message">Your phone is low on memory, you may feel some lags while editing images.</string>
+
 </resources>
