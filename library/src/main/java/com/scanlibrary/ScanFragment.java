@@ -100,7 +100,7 @@ public class ScanFragment extends Fragment {
         Bitmap tempBitmap = ((BitmapDrawable) sourceImageView.getDrawable()).getBitmap();
         Map<Integer, PointF> pointFs = getEdgePoints(tempBitmap);
         polygonView.setPoints(pointFs);
-        polygonView.setVisibility(View.VISIBLE);
+        polygonView.setVisibility(View.GONE);
         int padding = (int) getResources().getDimension(R.dimen.scanPadding);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(tempBitmap.getWidth() + 2 * padding, tempBitmap.getHeight() + 2 * padding);
         layoutParams.gravity = Gravity.CENTER;
